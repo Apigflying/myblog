@@ -1,0 +1,160 @@
+$rem: 20/1rem; //定义rem
+// 全局的函数
+@mixin clear {
+  zoom: 1;
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+}
+
+@mixin border($width, $style, $type: solid) {
+  border: $width $type $style;
+}
+
+@mixin borderRadius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  -o-border-radius: $radius;
+  border-radius: $radius;
+}
+
+//定位上下左右居中
+@mixin center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+//定位上下居中
+@mixin ct {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+//定位左右居中
+@mixin cl {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+//宽高
+@mixin wh($width, $height : $width) {
+  width: $width;
+  height: $height;
+}
+
+//字体大小、行高、字体
+@mixin font($size, $line-height, $family: 'Microsoft YaHei') {
+  font: $size $line-height $family;
+}
+
+//字体大小，颜色
+@mixin sc($size, $color) {
+  font-size: $size;
+  color: $color;
+}
+
+//flex 布局和 子元素 对其方式
+@mixin fj($type: space-between, $align: center) {
+  display: flex;
+  justify-content: $type;
+  align-items: $align;
+}
+
+@mixin shadow() {
+  background: #fff;
+  box-shadow: 2px 2px 2px #bdbdbd;
+}
+
+@mixin shadow3d() {
+  position: relative;
+  margin: 30px auto;
+  background: #fff;
+  &:before,
+  &:after {
+    position: absolute;
+    z-index: -1;
+    /*让元素层级下降，被覆盖*/
+    content: "";
+    bottom: 15px;
+    left: 10px;
+    width: 50%;
+    top: 80%;
+    max-width: 300px;
+    background: #777;
+    box-shadow: 0 15px 10px #777;
+    transform: rotate(-3deg);
+  }
+  &:after {
+    transform: rotate(3deg);
+    right: 10px;
+    left: auto;
+  }
+}
+
+.warning-border {
+  animation: warring 1s infinite;
+}
+@keyframes warring {
+  0% {
+    box-shadow: 0px 0px 1px 1px rgba(255, 0, 0, 0.7) inset;
+  }
+  50% {
+    box-shadow: 0px 0px 0px 0px transparent inset;
+  }
+  100% {
+    box-shadow: 0px 0px 1px 1px rgba(255, 0, 0, 0.7) inset;
+  }
+}
+
+$fff:#fff;
+$greencolor:#6cc;
+$bluecolor: #0090ff; //文字的颜色 蓝
+$redcolor:#e34156; //文字的颜色 红
+$redBgdColor:rgba(227, 65, 87, 0.3);
+$orangecolor:#fd9055; //文字的颜色 橙
+$yellowcolor:#d6af11; //文字的颜色 黄
+$fonth4color: #6d8097; //区域的h4的文字颜黄
+$heightlightfontcolor: #bacfe8; //有高亮文字的颜色
+$commonfontcolor: #8698ae; //非高亮的颜色值
+$tableBgdColor:#161635;
+@mixin title-retouch {
+  position: relative;
+  padding-left: 15px;
+  &:before {
+    content: '';
+    left: 0;
+    position: absolute;
+    width: 2px;
+    height: 28px;
+    background: $bluecolor;
+  }
+}
+
+@mixin hover-shadow() {
+  box-shadow: 0 3px 0 transparent;
+  transition: .5s;
+  &:hover{
+    box-shadow: 0 3px 10px #999;
+  }
+}
+
+.section{
+  @include clear;
+}
+
+.main {
+  float: left;
+  width: 680px;
+}
+
+.aside {
+  float: right;
+  width: 300px;
+}
