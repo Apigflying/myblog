@@ -6,4 +6,4 @@ yarn-error.log*
 .vscode/
 rsa_private_key.pem
 rsa_public_key.pem
-config/default.js
+server/config/default.js
