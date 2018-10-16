@@ -37,4 +37,8 @@ router.post(
   userController.verifyToken,
   getDataController.getUserArticles
 )
+router.get(
+  '/getUserWeather',
+  getDataController.getUserWeather
+)
 export default router;

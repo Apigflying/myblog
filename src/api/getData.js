@@ -49,3 +49,10 @@ export function getUserArticles(){
     url:`${proxy}/getUserArticles`
   })
 }
+// 获取用户天气信息
+export function getUserWeather(ip){
+  return fetch({
+    method,
+    url:`${proxy}/getUserWeather?ip=${ip}`
+  })
+}

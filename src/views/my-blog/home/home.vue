@@ -16,31 +16,70 @@
         关注我
         <i class="fa fa-github" aria-hidden="true"></i>
       </div>
-      <div class="environment">
-        <span>天气</span>
+      <div class="environment" v-if="weather">
+        <h3>天气</h3>
+        <div>
+          <div class="place">
+            {{weather.province}} - {{weather.city}}
+          </div>
+          <div class="weather">
+            天气：{{weather.weather}}
+          </div>
+          <div class="temperature">
+            气温：{{weather.temperature}}℃
+          </div>
+          <div class="humidity">
+            湿度：{{weather.humidity}}
+          </div>
+          <div class="reporttime">
+            天气更新时间：{{weather.reporttime}}
+          </div>
+          <div class="wind">
+            风向：{{weather.winddirection}} {{weather.windpower}}级
+          </div>
+        </div>
       </div>
     </aside>
   </section>
 </template>
 
 <script>
+import { getUserWeather } from 'api/getData';
 export default {
   name: 'Home',
   data () {
     return {
       search: '',
+      weather: null
     }
   },
+  created(){
+    this.getUserWeather();
+  },
   methods: {
-    toLogin(){
+    async getUserWeather () {
+      let { data: { code, data, message } } = await getUserWeather('');
+      if (code === 200) {
+        this.weather = data;
+        console.log(data);
+      } else {
+        this.weather = null;
+        this.$message({
+          type: 'warning',
+          message,
+          center: true,
+        })
+      }
+    },
+    toLogin () {
       this.$router.push({
-        name:'login'
+        name: 'login'
       })
     },
-    toDetail(id){
+    toDetail (id) {
       this.$router.push({
-        name:'ArticleDetail',
-        params:{id}
+        name: 'ArticleDetail',
+        params: { id }
       })
     },
     searchList () {
@@ -53,8 +92,8 @@ export default {
       }
       // 提交接口
       this.$router.push({
-        name:'ArticleList',
-        query:{search}
+        name: 'ArticleList',
+        query: { search }
       })
     }
   }
@@ -66,15 +105,15 @@ export default {
 $tagboardsize: 30px;
 $hotcolor: #db4659;
 .home-wrap {
-  width:100%;
-  display:flex;
+  width: 100%;
+  display: flex;
   justify-content: space-between;
-  .section{
-    flex:3;
-    margin-right:10px;
+  .section {
+    flex: 3;
+    margin-right: 10px;
   }
-  .aside{
-    flex:1;
+  .aside {
+    flex: 1;
   }
   h3 {
     @include title-retouch;
@@ -129,9 +168,9 @@ $hotcolor: #db4659;
         }
       }
     }
-    .time-line{
-      .time-line-content{
-        height:200px;
+    .time-line {
+      .time-line-content {
+        height: 200px;
       }
     }
   }

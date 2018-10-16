@@ -8,7 +8,35 @@ import articleCommentModel from 'models/articleComment/articleComment.js';
 import articleSubCommentModel from 'models/articleSubComment/articleSubComment.js';
 // 拿到的是实例
 import userInstance from 'controller/user/user.js';
+import configLite from 'config-lite';
+const { gaodeKey } = configLite(__dirname);
 import dao from 'dao/dao.js';
+// request调用三方接口
+import request from 'request';
+function getPlaceByIp (ip) {
+  return new Promise((resolve, reject) => {
+    request({
+      uri: `http://ip.taobao.com/service/getIpInfo.php?ip=${ ip }`
+    }, (err, res, body) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(JSON.parse(body));
+    })
+  })
+}
+function getWeatherByCityId (cityId) {
+  return new Promise((resolve, reject) => {
+    request({
+      uri: `https://restapi.amap.com/v3/weather/weatherInfo?city=${ cityId }&key=${ gaodeKey }`
+    }, (err, res, body) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(JSON.parse(body));
+    })
+  })
+}
 // es6只能继承class 不能继承实例
 const User = userInstance.constructor;
 class getDataController extends User {
@@ -17,6 +45,34 @@ class getDataController extends User {
     this.getUploadToken = this.getUploadToken.bind(this);
     this.getArticleCommentById = this.getArticleCommentById.bind(this);
     this.getSubCommentById = this.getSubCommentById.bind(this);
+  }
+  async getUserWeather (req, res, next) {
+    const ip = req.query.ip || req.ip;
+    const getIp = ip.split(',')[0];
+    const ipre = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
+    if (ipre.test(getIp)) {
+      let { data: ipMessage } = await getPlaceByIp(getIp);
+      let { lives: weather } = await getWeatherByCityId(ipMessage.city_id);
+      console.log(weather);
+      if (weather && weather.length) {
+        res.send({
+          code: 200,
+          data: weather[0]
+        });
+      } else {
+        res.send({
+          code: 404,
+          data: [],
+          message: '没有您所在位置对应的天气信息'
+        })
+      }
+    } else {
+      res.send({
+        code: 415,
+        data: null,
+        message: '格式错误！'
+      })
+    }
   }
   // 获取七牛云上传所需的key和token
   getUploadToken (req, res) {
