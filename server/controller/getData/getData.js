@@ -68,6 +68,7 @@ class getDataController extends User {
       }
     } else {
       res.send({
+        getIp,
         code: 415,
         data: null,
         message: '格式错误！'
