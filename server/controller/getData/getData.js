@@ -39,6 +39,9 @@ function getWeatherByCityId (cityId) {
 }
 // es6只能继承class 不能继承实例
 const User = userInstance.constructor;
+function getClientIp (req) {
+  return req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+}
 class getDataController extends User {
   constructor() {
     super();
@@ -47,7 +50,7 @@ class getDataController extends User {
     this.getSubCommentById = this.getSubCommentById.bind(this);
   }
   async getUserWeather (req, res, next) {
-    const ip = req.query.ip || req.ip;
+    const ip = getClientIp(req);
     const getIp = ip.split(',')[0];
     const ipre = /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
     if (ipre.test(getIp)) {
