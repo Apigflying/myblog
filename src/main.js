@@ -11,8 +11,6 @@ import "src/style/element.theme"; //设置element的全局样式
 import 'font-awesome/css/font-awesome.css'// 字体
 import errorImage from '../static/image/error.png'
 import loadingImage from '../static/image/loading.svg';
-import asyncMes from 'src/plugins/asyncMessage';
-Vue.use(asyncMes);
 import NProgress from "nprogress"; // progress bar
 /* 图片懒加载 */
 import VueLazyLoad from 'vue-lazyload';

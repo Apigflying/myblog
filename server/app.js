@@ -5,10 +5,9 @@ import router from 'router/index.js';
 import configLite from 'config-lite';
 import bodyParser from 'body-parser';
 import history from 'connect-history-api-fallback';
-
+import compression from 'compression';
 const config = configLite(__dirname);
 const app = express();
-
 //允许跨域请求
 if (config.alloworigin) {
   app.all('*', (req, res, next) => {
@@ -24,6 +23,8 @@ if (config.alloworigin) {
     }
   });
 }
+// 开启gzip加速
+app.use(compression({ threshold: 9 }))
 // 处理post请求的参数
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
