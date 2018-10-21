@@ -19,48 +19,48 @@ class User extends Base {
       此函数会将userName、userPic添加进去
     */
     let data = null;
-    if(!!list&&list.length){
-      data = await Promise.all(list.map(async (item)=>{
+    if (!!list && list.length) {
+      data = await Promise.all(list.map(async (item) => {
         let user = await this.findUserInfoById(item.userId);
-        return Object.assign({},item,{
-          userName:user.username,
-          userPic:user.picture,
+        return Object.assign({}, item, {
+          userName: user.username,
+          userPic: user.picture,
         });
       }));
-    }else{
+    } else {
       data = [];
     }
     return data;
   }
-  async findUserInfoById(id){
+  async findUserInfoById (id) {
     return await UserModel.findById(id);
   }
-  async updateUserMessage(req,res){
-    let {user,body} = req;
-    try{
-      let data = await UserModel.findByIdAndUpdate(user.id,Object.assign({},user,body));
+  async updateUserMessage (req, res) {
+    let { user, body } = req;
+    try {
+      let data = await UserModel.findByIdAndUpdate(user.id, Object.assign({}, user, body));
       res.send({
-        code:200,
-        message:'更新数据成功！'
+        code: 200,
+        message: '更新数据成功！'
       })
-    }catch(e){
+    } catch (e) {
       res.send({
-        code:500,
-        message:'user/updateUserMessage 报错'
+        code: 500,
+        message: 'user/updateUserMessage 报错'
       })
     }
   }
   // 通过用户名获取用户信息
-  async findUserInfoByUserName(req,res,next){
-    let {user} = req;
-    if(user.username){
+  async findUserInfoByUserName (req, res, next) {
+    let { user } = req;
+    if (user.username) {
       let data = await UserModel.findOne({
-        "username":user.username
+        "username": user.username
       });
       req.user = {
-        id:data._id,
+        id: data._id,
         username: data.username,// 用户名
-        picture:  data.picture, // 头像图片
+        picture: data.picture, // 头像图片
         individualitySignature: data.individualitySignature,// 个性签名
         introduce: data.introduce, // 自我介绍
         createtime: data.createtime,// 用户创建时间
@@ -68,10 +68,10 @@ class User extends Base {
         articles: data.articles, // 保存文章编号
       };
       next();
-    }else{
+    } else {
       res.send({
-        code:404,
-        message:'该用户不存在！'
+        code: 404,
+        message: '该用户不存在！'
       })
     }
   }
@@ -96,33 +96,33 @@ class User extends Base {
       }
     } else {
       res.send({
-        code:400,
+        code: 400,
         message: '登录信息有误，请重新登录后再试！'
       })
     }
   }
   // 获取用户信息
-  getUserInfo (req,res){
+  getUserInfo (req, res) {
     // 在下面的流程中，已经将user更改
-    let {user} = req;
+    let { user } = req;
     res.send({
-      code:200,
-      message:'success',
-      data:user
+      code: 200,
+      message: 'success',
+      data: user
     })
   }
   // 上面的verifyToken获取用户的信息比较少，经过这个中间件，能够获取更多的user信息，req.user
-  async findUserInfoByUserName(req,res,next){
-    let {user} = req;
-    if(user.username){
+  async findUserInfoByUserName (req, res, next) {
+    let { user } = req;
+    if (user.username) {
       let data = await UserModel.findOne({
-        username:user.username
+        username: user.username
       });
       // 对user重新赋值，通过在token中获取的用户名，读取更多用户信息，重新赋值给req.user
       req.user = {
-        id:data._id,
+        id: data._id,
         username: data.username,// 用户名
-        picture:  data.picture, // 头像图片
+        picture: data.picture, // 头像图片
         individualitySignature: data.individualitySignature,// 个性签名
         introduce: data.introduce, // 自我介绍
         createtime: data.createtime,// 用户创建时间
@@ -130,10 +130,10 @@ class User extends Base {
         articles: data.articles, // 保存文章编号
       };
       next();
-    }else{
+    } else {
       res.send({
-        code:404,
-        message:'该用户不存在！'
+        code: 404,
+        message: '该用户不存在！'
       })
     }
   }
@@ -198,55 +198,61 @@ class User extends Base {
   }
   // 注册接口
   async signUp (req, res) {
-    const { username, password } = req.body;
-    if (!username.trim() || !password.trim()) {
-      /*
-        验证密码是否可用
-      */
-      res.send({
-        code: 401,
-        message: '缺少必填项'
-      })
-      return ;
-    }
-    try {
-      // 如果用户名存在，不能注册
-      let isUserExit = await this.isUserNameExisting(username);
-      if (isUserExit) {
+    const { username, password, validateCode } = req.body;
+    if (req.session.validateCode === validateCode.toUpperCase()) {
+      if (!username.trim() || !password.trim()) {
         res.send({
-          code: 405,
-          state: 2, // 用户名重复
-          message: '用户名重复'
+          code: 401,
+          message: '缺少必填项'
         })
         return;
       }
-      // 将密码二次加密，保存到数据库
-      const newpassword = this._encryption(password);
-      const createTime = moment().valueOf();
-      const user = {
-        username,// 用户名
-        password: newpassword, // 密码
-        picture: 'http://osjykr1v3.bkt.clouddn.com/FsvJiwQsw4ZjPkeSAs7KhMdDVGHk', // 头像图片
-        individualitySignature: '',// 个性签名
-        introduce: '', // 自我介绍
-        createtime: createTime,// 用户创建时间
-        authlist: [], // 权限列表
-        articles: [] // 保存文章编号
-      }
+      try {
+        // 如果用户名存在，不能注册
+        let isUserExit = await this.isUserNameExisting(username);
+        if (isUserExit) {
+          res.send({
+            code: 405,
+            state: 2, // 用户名重复
+            message: '用户名重复,请换一个吧！'
+          })
+          return;
+        }
+        // 将密码二次加密，保存到数据库
+        const newpassword = this._encryption(password);
+        const createTime = moment().valueOf();
+        const user = {
+          username,// 用户名
+          password: newpassword, // 密码
+          picture: 'http://osjykr1v3.bkt.clouddn.com/FsvJiwQsw4ZjPkeSAs7KhMdDVGHk', // 头像图片
+          individualitySignature: '',// 个性签名
+          introduce: '', // 自我介绍
+          createtime: createTime,// 用户创建时间
+          authlist: [], // 权限列表
+          articles: [] // 保存文章编号
+        }
 
-      let data = await UserModel.create(user);
-      return res.send({
-        code: 200,
-        state:1,
-        message: "注册成功"
-      })
-    } catch (e) {
+        let data = await UserModel.create(user);
+        return res.send({
+          code: 200,
+          state: 1,
+          message: "注册成功"
+        })
+      } catch (e) {
+        res.send({
+          code: 500,
+          error: e,
+          message: '发生错误了',
+        })
+      }
+    } else {
       res.send({
-        code:500,
-        error:e,
-        message: '发生错误了',
+        code: 401,
+        message: '验证码错误',
+        data: null
       })
     }
+
   }
   // 加密
   _encryption (password) {

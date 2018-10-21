@@ -27,7 +27,9 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       'src': resolve('src'),
-      'views': path.resolve(__dirname, '../src/views'),
+      'static': resolve('static'),
+      'node_modules': resolve('node_modules'),
+      'views': resolve('src/views'),
       'components': path.resolve(__dirname, '../src/components'),
       'utils': path.resolve(__dirname, '../src/utils'),
       'api': path.resolve(__dirname, '../src/api'),
@@ -35,8 +37,7 @@ module.exports = {
       'mixins': path.resolve(__dirname, '../src/mixins'),
       'store': path.resolve(__dirname, '../src/store'),
       'router': path.resolve(__dirname, '../src/router'),
-      'node_modules': path.resolve(__dirname, '../node_modules'),
-      'static': path.resolve(__dirname, '../static'),
+      'style': path.resolve(__dirname, '../src/style'),
     }
   },
   module: {

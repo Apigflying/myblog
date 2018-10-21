@@ -1,24 +1,30 @@
 <template>
-  <!-- 发布简介 -->
-  <el-form ref="form" :model="form" class="release-introduction-wrap" @submit.native.prevent>
-    <el-form-item label="文章标题">
-      <el-input v-model="form.title" placeholder="请输入标题"></el-input>
-    </el-form-item>
-    <el-form-item label="文章简介">
-      <el-input type="textarea" v-model="form.introduction" :rows="2" resize="none" placeholder="请输入文章简介"></el-input>
-    </el-form-item>
-    <el-form-item label="上传图片">
-      <upload-image v-model="imgurls" ref="uploadImage"/>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="onSubmit" :loading="loading">{{createText}}</el-button>
-      <el-button>取消</el-button>
-    </el-form-item>
-  </el-form>
+  <div class="introduce">
+    <h3>填写文章简介</h3>
+    <!-- 发布简介 -->
+    <el-form ref="form" :rules="rules" :model="form" class="release-introduction-wrap" label-width="100px" @submit.native.prevent>
+      <el-form-item prop="title" label="文章标题" >
+        <el-input v-model="form.title" placeholder="请输入标题"></el-input>
+      </el-form-item>
+      <el-form-item prop="introduce" label="文章简介">
+        <el-input type="textarea" v-model="form.introduction" :rows="2" resize="none" placeholder="请输入文章简介"></el-input>
+      </el-form-item>
+      <el-form-item label="上传图片">
+        <upload-image v-model="imgurls" ref="uploadImage" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit" :loading="loading">{{createText}}</el-button>
+        <el-button>取消</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
 </template>
+
 <script>
 import articleContentMixin from 'mixins/articleContent.js';
-import { createArticleIntroduce } from 'api/create';
+import {
+  createArticleIntroduce
+} from 'api/create';
 import UploadImage from 'components/upload';
 export default {
   // name: 'ReleaseIntroduction',
@@ -27,15 +33,41 @@ export default {
     "upload-image": UploadImage
   },
   data () {
+    const validateTitle = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入标题'));
+      } else {
+        callback();
+      }
+    }
+    const validateIntroduce = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入简介'));
+      } else {
+        callback();
+      }
+    }
     return {
       uploadImage: null,
       imgurls: [],
       createText: '立即创建',
       loadingEnd: false,
       loading: false,
+      rules: {
+        title: [{
+          required: true,
+          trigger: 'blur',
+          validator: validateTitle
+        }],
+        introduce: [{
+          required: true,
+          trigger: 'blur',
+          validator: validateIntroduce
+        }],
+      },
       form: {
-        title: '',// 标题
-        introduction: '',// 简介
+        title: '', // 标题
+        introduction: '', // 简介
         imageUrl: ''
       },
     }
@@ -84,7 +116,13 @@ export default {
         let ids = this.id === 'add' ? {} : {
           id: this.id
         };
-        let { data: { id, code, message } } = await createArticleIntroduce(Object.assign({}, ids, this.form));
+        let {
+          data: {
+            id,
+            code,
+            message
+          }
+        } = await createArticleIntroduce(Object.assign({}, ids, this.form));
         if (code === 200) {
           this.loading = false;
           this.loadingEnd = true;
@@ -110,8 +148,25 @@ export default {
   }
 }
 </script>
+
 <style lang="scss" scoped>
-@import "../../../style/base";
+@import "~style/base";
+.introduce {
+  h3 {
+    margin: 0;
+    padding: 10px 10px;
+    background: $greencolor;
+    position: absolute;
+    left: 0;
+    right: 0;
+    color: #f5f5f5;
+    border-radius: 0 0 5px 5px;
+    overflow: hidden;
+  }
+  .release-introduction-wrap {
+    padding-top: 60px;
+  }
+}
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;

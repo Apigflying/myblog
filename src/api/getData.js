@@ -56,3 +56,10 @@ export function getUserWeather(ip){
     url:`${proxy}/getUserWeather?ip=${ip}`
   })
 }
+// 获取验证码
+export function getValidateCode(){
+  return fetch({
+    method,
+    url:`${proxy}/getValidateCode`
+  })
+}

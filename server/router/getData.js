@@ -41,4 +41,8 @@ router.get(
   '/getUserWeather',
   getDataController.getUserWeather
 )
+router.get(
+  '/getValidateCode',
+  getDataController.getValidateCode
+)
 export default router;

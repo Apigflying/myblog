@@ -1,3 +1,4 @@
+import ccap from 'ccap';
 // 文章简介 model
 import articleIntroduceModel from 'models/articleIntroduce/articleIntroduce.js';
 // 文章详情 model
@@ -49,6 +50,15 @@ class getDataController extends User {
     this.getArticleCommentById = this.getArticleCommentById.bind(this);
     this.getSubCommentById = this.getSubCommentById.bind(this);
   }
+  getValidateCode (req, res) {
+    var ary = ccap().get();
+    var txt = ary[0];
+    var buf = ary[1];
+    req.session.validateCode = txt;
+    var base64Str = buf.toString('base64');
+    var datauri = 'data:image/png;base64,' + base64Str;
+    res.end(datauri);
+  }
   async getUserWeather (req, res, next) {
     const ip = getClientIp(req);
     const getIp = ip.split(',')[0];
@@ -56,7 +66,6 @@ class getDataController extends User {
     if (ipre.test(getIp)) {
       let { data: ipMessage } = await getPlaceByIp(getIp);
       let { lives: weather } = await getWeatherByCityId(ipMessage.city_id);
-      console.log(weather);
       if (weather && weather.length) {
         res.send({
           code: 200,
