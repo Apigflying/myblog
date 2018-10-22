@@ -1,12 +1,22 @@
 <template>
-  <div class="introduce">
+  <div class="introduce-wrap introduce">
     <h3>填写文章简介</h3>
     <!-- 发布简介 -->
-    <el-form ref="form" :rules="rules" :model="form" class="release-introduction-wrap" label-width="100px" @submit.native.prevent>
-      <el-form-item prop="title" label="文章标题" >
+    <el-form ref="form" :rules="rules" :model="form" class="release-introduction-wrap" label-width="80px" @submit.native.prevent>
+      <el-form-item prop="title" label="文章标题">
         <el-input v-model="form.title" placeholder="请输入标题"></el-input>
       </el-form-item>
-      <el-form-item prop="introduce" label="文章简介">
+      <el-form-item prop="type" label="文章分类">
+        <el-select v-model="form.type" multiple filterable allow-create default-first-option placeholder="请选择文章分类">
+          <el-option
+            v-for="item in typeOptions"
+            :key="item.value"
+            :label="item.value"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="introduction" label="文章简介">
         <el-input type="textarea" v-model="form.introduction" :rows="2" resize="none" placeholder="请输入文章简介"></el-input>
       </el-form-item>
       <el-form-item label="上传图片">
@@ -14,7 +24,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit" :loading="loading">{{createText}}</el-button>
-        <el-button>取消</el-button>
+        <el-button @click.native="turnBack">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -47,6 +57,16 @@ export default {
         callback();
       }
     }
+    const validateSelect = (rule, value, callback) => {
+      console.log(value);
+      if (!value.length) {
+        callback(new Error('至少要有一个分类！'));
+      } else if (value.length > 4) {
+        callback(new Error('最多只能有四个分类！'));
+      } else {
+        callback();
+      }
+    }
     return {
       uploadImage: null,
       imgurls: [],
@@ -59,16 +79,31 @@ export default {
           trigger: 'blur',
           validator: validateTitle
         }],
-        introduce: [{
+        introduction: [{
           required: true,
           trigger: 'blur',
           validator: validateIntroduce
         }],
+        type: [{
+          required: true,
+          trigger: 'change',
+          validator: validateSelect
+        }],
       },
+      typeOptions: [{
+        value: '前端'
+      }, {
+        value: '后端'
+      }, {
+        value: '服务器'
+      }, {
+        value: '日记'
+      }],
       form: {
         title: '', // 标题
         introduction: '', // 简介
-        imageUrl: ''
+        imageUrl: '',
+        type: ['前端']
       },
     }
   },
@@ -84,66 +119,62 @@ export default {
     })
   },
   methods: {
+    turnBack () {
+      this.$router.replace('/')
+    },
     // 创建按钮的事件
     async onSubmit () {
-      if (this.loadingEnd) {
-        return false;
-      }
       if (this.loading) {
         return false;
       }
-      this.loading = true;
-      if (!this.form.title.trim()) {
-        this.loading = false;
-        return this.$message({
-          type: 'warning',
-          message: '文章标题不能为空'
-        })
-      };
-      if (!this.form.introduction.trim()) {
-        this.loading = false;
-        return this.$message({
-          type: 'warning',
-          message: '文章简介不能为空'
-        })
-      };
-      try {
-        // 此函数执行中会判断，如果没有选择图片，不会提交
-        await this.uploadImage.submits();
-        if (this.imgurls.length) {
-          this.form.imageUrl = this.imgurls[0];
-        }
-        let ids = this.id === 'add' ? {} : {
-          id: this.id
-        };
-        let {
-          data: {
-            id,
-            code,
-            message
+      this.$refs.form.validate(async (valid) => {
+        if (valid) {
+          try {
+            // 此函数执行中会判断，如果没有选择图片，不会提交
+            await this.uploadImage.submits();
+            if (this.imgurls.length) {
+              this.form.imageUrl = this.imgurls[0];
+            }
+            let ids = this.id === 'add' ? {} : {
+              id: this.id
+            };
+            let {
+              data: {
+                id,
+                code,
+                message
+              }
+            } = await createArticleIntroduce(Object.assign({}, ids, this.form));
+            if (code === 200) {
+              this.$router.replace({
+                path: `/release/release-article/${ id }`
+              })
+            } else if (code === 400) {
+              this.$message({
+                type: 'error',
+                message: message
+              })
+              this.$router.push('/login')
+            } else {
+              this.$message({
+                type: 'error',
+                message: message
+              })
+            }
+            this.loading = false;
+
+          } catch (e) {
+            this.$message({
+              type: 'error',
+              message: e
+            })
+            this.loading = false;
           }
-        } = await createArticleIntroduce(Object.assign({}, ids, this.form));
-        if (code === 200) {
-          this.loading = false;
-          this.loadingEnd = true;
-          this.$router.replace({
-            path: `/release/release-article/${ id }`
-          })
-        } else if (code === 400) {
-          this.$message({
-            type: 'error',
-            message: message
-          })
-          this.$router.push('/login')
         } else {
-          this.$message({
-            type: 'error',
-            message: message
-          })
+          this.loading = false;
         }
-      } catch (e) {
-        console.error(e);
-      }
+      });
+
     },
   }
 }
@@ -189,6 +220,9 @@ export default {
   width: 178px;
   height: 178px;
   display: block;
+}
+.el-select {
+  width: 100%;
 }
 </style>
 

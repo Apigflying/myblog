@@ -14,7 +14,7 @@ import loadingImage from '../static/image/loading.svg';
 import NProgress from "nprogress"; // progress bar
 /* 图片懒加载 */
 import VueLazyLoad from 'vue-lazyload';
-import mavonEditor from 'mavon-editor'
+import mavonEditor from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
 Vue.use(mavonEditor)
 Vue.use(VueLazyLoad,{

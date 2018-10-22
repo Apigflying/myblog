@@ -62,6 +62,9 @@ export default {
 .header {
   @include wh(100%, 50px);
   @include fj;
+  h1{
+    font-weight: 100;
+  }
   .message-wrap {
     @include fj;
     .user-message {

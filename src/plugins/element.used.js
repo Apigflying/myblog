@@ -11,6 +11,8 @@ import {
   FormItem,
   Icon,
   Row,
+  Option,
+  Select,
   Col,
   Collapse,
   CollapseItem,
@@ -32,7 +34,8 @@ Vue.use(Row)
 Vue.use(Col)
 Vue.use(Collapse)
 Vue.use(CollapseItem)
-
+Vue.use(Select)
+Vue.use(Option)
 Vue.use(Loading.directive)
 
 Vue.prototype.$loading = Loading.service
