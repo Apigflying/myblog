@@ -7,6 +7,7 @@ import "./filters/index.js";
 import "src/style/cssreset"; //cssreset
 import "src/plugins/element.used"; //element按需加载
 import "src/style/element.theme"; //设置element的全局样式
+import "src/plugins/directive";
 
 import 'font-awesome/css/font-awesome.css'// 字体
 import errorImage from '../static/image/error.png'

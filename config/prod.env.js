@@ -1,5 +1,5 @@
 'use strict'
-const BASE_URL = process.env.NODE_ENV === 'production' ? '"http://myblogs.chenxuanyu.com"' : '"http://localhost:3003"';
+const BASE_URL = '"http://myblogs.chenxuanyu.com"';
 module.exports = {
   NODE_ENV: '"production"',
   IS_DEV: 'false',

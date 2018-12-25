@@ -17,7 +17,7 @@
         <el-button type="primary" class="btn login" :loading="loading" @click.native.prevent="handleLogin">登录</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button class="btn signUp" :loading="loading" @click.native.prevent="toSignUp">注册</el-button>
+        <el-button id="signUp" class="btn signUp" :loading="loading" @click.native.prevent="toSignUp" v-bd-click="['sign','click','toSignUp']">注册</el-button>
       </el-form-item>
     </el-form>
   </div>

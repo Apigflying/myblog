@@ -11,34 +11,6 @@ const prodEnv = require('./prod.env')
   pathRewrite: 是否重写请求。重写规则在下方的pathRewrite中
 */
 const serverIp = JSON.parse(prodEnv.BASE_URL)
-const proxyList = ['/test', '/user', '/create','/getData','/deletes']; // 以此开头的都走代理
-let proxyTables = [{
-  proxyHead: '/cgi-bin',
-  proxyReal: 'https://u.y.qq.com/',
-  pathRewrite: false
-}].concat(proxyList.map(item => ({
-  proxyHead: item, // 域名+端口 后面的请求体部分的开头
-  proxyReal: serverIp, // prodEnv是实际生产环境的域名和端口(如果接口已经发布到服务器端)
-  pathRewrite: false //是否重写代理。
-})))
-
-let proxyTable = {}
-
-proxyTables.forEach(item => {
-  proxyTable[item.proxyHead] = item.pathRewrite ? {
-    target: item.proxyReal,
-    // ws: true, //代理websocket连接
-    changeOrigin: true,
-    pathRewrite: {// 重写规则
-      ['^' + item.proxyHead]: ''
-    }
-  } : {
-      target: item.proxyReal,
-      changeOrigin: true,
-      // ws: true //代理websocket连接
-    }
-})
-console.log(serverIp)
 
 module.exports = {
   dev: {
@@ -55,7 +27,24 @@ module.exports = {
     cacheBusting: true,
     cssSourceMap: false,
     autoOpenBrowser: true,
-    proxyTable: proxyTable
+    proxyTable: {
+      '/user': {
+        target: serverIp,
+        changeOrigin: true,
+      },
+      '/create': {
+        target: serverIp,
+        changeOrigin: true,
+      },
+      '/getData': {
+        target: serverIp,
+        changeOrigin: true,
+      },
+      '/deletes': {
+        target: serverIp,
+        changeOrigin: true,
+      },
+    }
   },
 
   build: {

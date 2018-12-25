@@ -13,6 +13,6 @@ const router = new Router({
   scrollBehavior: () => ({ y: 0 })
 });
 
-router.afterEach(hook.afterEach);
+router.beforeEach(hook.beforeEach);
 
 export default router;
