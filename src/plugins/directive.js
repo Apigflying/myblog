@@ -3,11 +3,10 @@ import Vue from 'vue';
 Vue.directive('bd-click', {
   // 当绑定元素插入到 DOM 中。
   inserted: function (el, binding) {
-    el.onclick = function (el) {
+    el.addEventListener('click', function (el) {
       let value = binding.value;
-      console.log(value);
       window._hmt.push(['_trackEvent', ...value])
-    };
+    })
   }
 });
 
